@@ -10,7 +10,6 @@ st.set_page_config(page_title="Stock Report Generator", page_icon="📊")
 st.title("📊 Anusaya Stock Report Generator")
 st.write("Upload your raw inventory Excel file to generate the formatted stock report with subtotals and ageing.")
 
-# File Uploader Widget
 uploaded_file = st.file_uploader("Upload 'Anusaya Stock' Excel File", type=["xlsx", "xls"])
 
 def process_excel(file_bytes):
@@ -20,14 +19,15 @@ def process_excel(file_bytes):
     # Clean column headers
     df_raw.columns = [str(col).strip().replace('\n', ' ') for col in df_raw.columns]
 
-    # Target column mapping
+    # Target column mapping (supports both 'Stock Qty.' and 'Available Stock')
     target_cols = {
         'Inward Date': 'Inward Date',
         'Item Name': 'Item Name',
         'Marka': 'Marka',
         'Lot / Vakal': 'Lot / Vakal',
         'Count': 'Count',
-        'Available Stock': 'Available Stock'
+        'Available Stock': 'Available Stock',
+        'Stock Qty.': 'Available Stock'
     }
 
     col_map = {}
@@ -177,7 +177,7 @@ def process_excel(file_bytes):
     for col, width in col_widths.items():
         ws.column_dimensions[col].width = width
 
-    # Save output to an in-memory stream buffer
+    # Save output to buffer
     output_buffer = io.BytesIO()
     wb.save(output_buffer)
     output_buffer.seek(0)
